@@ -133,32 +133,23 @@
     async function askDeepSeek(question) {
         setStatus('🧠 Запрос к DeepSeek...');
         try {
-            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            const response = await fetch('https://cors-proxy-4rd.pages.dev/proxy', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer sk-3ba7ea2ac8f1479294c8c4422e8ea606'
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    model: 'deepseek-chat',
-                    messages: [
-                        { role: 'system', content: 'Отвечай кратко, живым разговорным языком, как друг.' },
-                        { role: 'user', content: question }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 500
-                })
+                body: JSON.stringify({ question: question })
             });
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
             const data = await response.json();
-            return data.choices[0].message.content;
+            return data.answer;
         } catch (err) {
             console.error(err);
-            setStatus(`❌ Ошибка API: ${err.message}`, true);
-            return 'Извини, сейчас не могу ответить. Проверь интернет или попробуй позже.';
+            setStatus(`❌ Ошибка: ${err.message}`, true);
+            return 'Извини, сейчас не могу ответить. Попробуй позже.';
         }
     }
 
